@@ -32,7 +32,12 @@ export class OrderService {
     try {
       const order = this.orderRepository.create({
         user_id: data.userId,
-        ...data,
+        cart_id: data.cartId,
+        items: data.items,
+        total: data.total,
+        status: OrderStatus.Open,
+        delivery: JSON.stringify(data.address),
+        comments: data?.comments,
       });
       return await this.orderRepository.save(order);
     } catch (error) {

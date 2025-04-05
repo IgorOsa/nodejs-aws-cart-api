@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CartRepository } from '../repositories/cart.repository';
 import { Repository } from 'typeorm';
 import { CartItem } from '../models/cart-items';
+import { CartStatuses } from '../models';
 
 @Injectable()
 export class CartService {
@@ -69,5 +70,9 @@ export class CartService {
     if (userCart) {
       await this.cartRepository.delete(userCart.id);
     }
+  }
+
+  async updateCartStatus(cartId: string, status: CartStatuses) {
+    await this.cartRepository.updateCartStatus(cartId, status);
   }
 }

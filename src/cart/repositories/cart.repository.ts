@@ -29,6 +29,15 @@ export class CartRepository {
   }
 
   async delete(cartId: string) {
-    await this.delete(cartId);
+    await this.repository.delete(cartId);
+  }
+
+  async updateCartStatus(cartId: string, status: CartStatuses) {
+    await this.repository.update(
+      { id: cartId },
+      {
+        status,
+      },
+    );
   }
 }

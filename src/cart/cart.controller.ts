@@ -18,6 +18,7 @@ import { CartItem } from './models/cart-items';
 import { CreateOrderDto, PutCartPayload } from 'src/order/type';
 import { Order } from 'src/order/models/order.entity';
 import { calculateCartTotal } from './models-rules';
+import { CartStatuses } from './models';
 
 @Controller('api/profile/cart')
 export class CartController {
@@ -81,7 +82,7 @@ export class CartController {
       address: body.address,
       total,
     });
-    this.cartService.removeByUserId(userId);
+    await this.cartService.updateCartStatus(cartId, CartStatuses.ORDERED);
 
     return {
       order,
