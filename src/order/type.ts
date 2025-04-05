@@ -19,6 +19,7 @@ export type Address = {
   lastName: string;
   comment: string;
 };
+
 export type CreateOrderDto = {
   items: Array<{ productId: string; count: 1 }>;
   address: {
@@ -33,6 +34,7 @@ export type PutCartPayload = {
   product: { description: string; id: string; title: string; price: number };
   count: number;
 };
+
 export type CreateOrderPayload = {
   userId: string;
   cartId: string;
