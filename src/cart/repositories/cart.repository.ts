@@ -12,19 +12,20 @@ export class CartRepository {
   ) {}
 
   async findByUserId(userId: string): Promise<Cart> {
-    return this.repository.findOne({ where: { user_id: userId } });
+    return this.repository.findOne({
+      where: { user_id: userId },
+      relations: ['items'],
+    });
   }
 
   async createByUserId(userId: string): Promise<Cart> {
-    const timestamp = Date.now();
     const newCart = this.repository.create({
       user_id: userId,
-      created_at: timestamp,
-      updated_at: timestamp,
       status: CartStatuses.OPEN,
     });
+    const cart = await this.repository.save(newCart);
 
-    return this.repository.save(newCart);
+    return cart;
   }
 
   async delete(cartId: string) {

@@ -17,6 +17,7 @@ import { CartService } from './services';
 import { CartItem } from './models/cart-items';
 import { CreateOrderDto, PutCartPayload } from 'src/order/type';
 import { Order } from 'src/order/models/order.entity';
+import { calculateCartTotal } from './models-rules';
 
 @Controller('api/profile/cart')
 export class CartController {
@@ -29,9 +30,8 @@ export class CartController {
   @UseGuards(BasicAuthGuard)
   @Get()
   async findUserCart(@Req() req: AppRequest): Promise<CartItem[]> {
-    const cart = await this.cartService.findOrCreateByUserId(
-      getUserIdFromRequest(req),
-    );
+    const user = getUserIdFromRequest(req);
+    const cart = await this.cartService.findOrCreateByUserId(user);
 
     return cart.items;
   }
@@ -44,10 +44,8 @@ export class CartController {
     @Body() body: PutCartPayload,
   ): Promise<CartItem[]> {
     // TODO: validate body payload...
-    const cart = await this.cartService.updateByUserId(
-      getUserIdFromRequest(req),
-      body,
-    );
+    const user = getUserIdFromRequest(req);
+    const cart = await this.cartService.updateByUserId(user, body);
 
     return cart.items;
   }
@@ -72,6 +70,7 @@ export class CartController {
     }
 
     const { id: cartId, items } = cart;
+    const total = calculateCartTotal(items);
     const order = this.orderService.create({
       userId,
       cartId,
@@ -80,7 +79,7 @@ export class CartController {
         count,
       })),
       address: body.address,
-      total: null,
+      total,
     });
     this.cartService.removeByUserId(userId);
 

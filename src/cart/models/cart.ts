@@ -5,11 +5,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  BeforeInsert,
+  BeforeUpdate,
 } from 'typeorm';
 import { CartStatuses } from '.';
 import { CartItem } from './cart-items';
 
-@Entity('cart')
+@Entity('carts')
 export class Cart {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -26,6 +28,17 @@ export class Cart {
   @Column({ type: 'enum', enum: CartStatuses, default: CartStatuses.OPEN })
   status: CartStatuses;
 
-  @OneToMany(() => CartItem, (cartItem) => cartItem.cart_id, { cascade: true })
+  @OneToMany(() => CartItem, (item) => item.cart, { cascade: true })
   items: CartItem[];
+
+  @BeforeInsert()
+  setCreationDate() {
+    this.created_at = new Date();
+    this.updated_at = new Date();
+  }
+
+  @BeforeUpdate()
+  setUpdateDate() {
+    this.updated_at = new Date();
+  }
 }

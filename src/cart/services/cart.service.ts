@@ -33,8 +33,11 @@ export class CartService {
 
   async updateByUserId(userId: string, payload: PutCartPayload): Promise<Cart> {
     const userCart = await this.findOrCreateByUserId(userId);
+    const userCartItems = await this.cartItemRepository.findBy({
+      cart_id: userCart.id,
+    });
 
-    const index = userCart.items.findIndex(
+    const index = userCartItems.findIndex(
       ({ product_id }) => product_id === payload.product.id,
     );
 
@@ -43,8 +46,8 @@ export class CartService {
         cart_id: userCart.id,
         product_id: payload.product.id,
         count: payload.count,
+        price: payload.product.price,
       });
-      userCart.items.push(cartItem);
       await this.cartItemRepository.save(cartItem);
     } else if (payload.count === 0) {
       await this.cartItemRepository.delete({
@@ -52,8 +55,9 @@ export class CartService {
         product_id: payload.product.id,
       });
     } else {
-      userCart.items[index].count = payload.count;
-      await this.cartItemRepository.save(userCart.items[index]);
+      userCartItems[index].count = payload.count;
+      userCartItems[index].price = payload.product.price;
+      await this.cartItemRepository.save(userCartItems[index]);
     }
 
     return await this.findOrCreateByUserId(userId);
