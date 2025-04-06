@@ -34,7 +34,7 @@ export class CartController {
     const user = getUserIdFromRequest(req);
     const cart = await this.cartService.findOrCreateByUserId(user);
 
-    return cart.items;
+    return cart.items ?? [];
   }
 
   // @UseGuards(JwtAuthGuard)

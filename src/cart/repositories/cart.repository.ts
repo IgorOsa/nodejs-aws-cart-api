@@ -11,9 +11,12 @@ export class CartRepository {
     private readonly repository: Repository<Cart>,
   ) {}
 
-  async findByUserId(userId: string): Promise<Cart> {
+  async findByUserId(
+    userId: string,
+    status = CartStatuses.OPEN,
+  ): Promise<Cart> {
     return this.repository.findOne({
-      where: { user_id: userId },
+      where: { user_id: userId, status },
       relations: ['items'],
     });
   }

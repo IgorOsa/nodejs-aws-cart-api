@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Cart } from 'src/cart/models/cart';
+import { Order } from 'src/order/models/order.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity()
 export class User {
@@ -13,4 +15,10 @@ export class User {
 
   @Column()
   password: string;
+
+  @OneToMany(() => Cart, (cart) => cart.user_id, { cascade: true })
+  carts: Cart[];
+
+  @OneToMany(() => Order, (order) => order.user_id, { cascade: true })
+  orders: Order[];
 }

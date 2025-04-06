@@ -15,7 +15,7 @@ export class CartApiStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(30),
       environment: {
         LOG_LEVEL: 'DEBUG',
-        NODE_ENV: process.env.NODE_ENV || 'development',
+        NODE_ENV: 'development',
         DB_HOST: process.env.DB_HOST!,
         DB_PORT: process.env.DB_PORT!,
         DB_USER: process.env.DB_USERNAME!,
