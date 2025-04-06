@@ -2,10 +2,22 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 export class CartApiStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    const vpc = ec2.Vpc.fromLookup(this, 'Vpc', { isDefault: true });
+
+    const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(
+      this,
+      'LambdaRDSSecurityGroup',
+      process.env.LAMBDA_RDS_SECURITY_GROUP_ID ||
+        (() => {
+          throw new Error('LAMBDA_RDS_SECURITY_GROUP_ID is not defined');
+        })(),
+    );
 
     const mainLambda = new lambda.Function(this, 'CartApiHandler', {
       runtime: lambda.Runtime.NODEJS_20_X,
@@ -13,6 +25,9 @@ export class CartApiStack extends cdk.Stack {
       code: lambda.Code.fromAsset('../dist'),
       memorySize: 256,
       timeout: cdk.Duration.seconds(30),
+      vpc,
+      securityGroups: [securityGroup],
+      allowPublicSubnet: true,
       environment: {
         LOG_LEVEL: 'DEBUG',
         NODE_ENV: 'development',
