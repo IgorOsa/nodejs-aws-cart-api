@@ -1,4 +1,4 @@
-CREATE TABLE "user" (
+CREATE TABLE user (
 	id uuid DEFAULT uuid_generate_v4() NOT NULL,
 	"name" varchar NOT NULL,
 	email varchar NULL,
@@ -42,7 +42,7 @@ CREATE TABLE orders (
 
 ALTER TABLE orders ADD CONSTRAINT "FK_f42b1d95404c45b10bf2451d814" FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE SET NULL;
 
-INSERT INTO "user" (id,name,email,"password") VALUES
+INSERT INTO user (id,name,email,"password") VALUES
 	 ('300b84df-168c-46e9-be12-f97be5bf0d6c','IgorOsa','test@example.com','TEST_PASSWORD');
 
 INSERT INTO carts (id,user_id,created_at,updated_at,status) VALUES

@@ -13,5 +13,6 @@ import { CartRepository } from './repositories/cart.repository';
   imports: [TypeOrmModule.forFeature([Cart, CartItem]), OrderModule],
   providers: [CartService, CartRepository],
   controllers: [CartController],
+  exports: [CartService],
 })
 export class CartModule {}

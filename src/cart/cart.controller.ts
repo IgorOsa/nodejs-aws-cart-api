@@ -82,7 +82,6 @@ export class CartController {
       address: body.address,
       total,
     });
-    await this.cartService.updateCartStatus(cartId, CartStatuses.ORDERED);
 
     return {
       order,
