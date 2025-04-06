@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
 
 import { typeOrmConfig } from './config/typeorm.config';
 import { AppController } from './app.controller';
@@ -15,7 +14,6 @@ import { OrderModule } from './order/order.module';
     AuthModule,
     CartModule,
     OrderModule,
-    ConfigModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [],

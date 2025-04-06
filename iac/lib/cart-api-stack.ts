@@ -12,8 +12,15 @@ export class CartApiStack extends cdk.Stack {
       handler: 'main.handler',
       code: lambda.Code.fromAsset('../dist'),
       memorySize: 256,
+      timeout: cdk.Duration.seconds(30),
       environment: {
         LOG_LEVEL: 'DEBUG',
+        NODE_ENV: process.env.NODE_ENV || 'development',
+        DB_HOST: process.env.DB_HOST!,
+        DB_PORT: process.env.DB_PORT!,
+        DB_USER: process.env.DB_USERNAME!,
+        DB_PASSWORD: process.env.DB_PASSWORD!,
+        DB_NAME: process.env.DB_NAME!,
       },
     });
 
