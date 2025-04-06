@@ -17,6 +17,7 @@ if (process.env.NODE_ENV === 'local') {
     app.enableCors({
       origin: (req, callback) => callback(null, true),
     });
+
     app.use(helmet());
     await app.listen(port, () => {
       console.log('App is running on %s port', port);
@@ -29,9 +30,9 @@ if (process.env.NODE_ENV === 'local') {
     await app.init();
 
     app.enableCors({
-      origin: (req, callback) => callback(null, true),
+      origin: '*',
+      credentials: true,
     });
-    app.use(helmet());
 
     const expressApp = app.getHttpAdapter().getInstance();
 

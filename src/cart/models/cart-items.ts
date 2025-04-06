@@ -1,4 +1,11 @@
-import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  PrimaryColumn,
+  VirtualColumn,
+} from 'typeorm';
 import { Cart } from './cart';
 
 @Entity('cart_items')
@@ -27,4 +34,9 @@ export class CartItem {
   @ManyToOne(() => Cart, (cart) => cart.items, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'cart_id' })
   cart: Cart;
+
+  @VirtualColumn({
+    query: (alias) => `${alias}.product_id`,
+  })
+  id: string;
 }

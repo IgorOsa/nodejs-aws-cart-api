@@ -39,12 +39,33 @@ export class CartApiStack extends cdk.Stack {
       },
     });
 
+    const { url } = mainLambda.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+      cors: {
+        allowedOrigins: ['*'],
+        allowedMethods: [
+          lambda.HttpMethod.GET,
+          lambda.HttpMethod.DELETE,
+          lambda.HttpMethod.PUT,
+        ],
+        allowedHeaders: ['*'],
+      },
+    });
+
     const api = new apigateway.LambdaRestApi(this, 'CartApi', {
       handler: mainLambda,
       proxy: true,
       deployOptions: {
         stageName: 'dev',
       },
+      defaultCorsPreflightOptions: {
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+        allowMethods: apigateway.Cors.ALL_METHODS,
+        allowHeaders: apigateway.Cors.DEFAULT_HEADERS,
+        allowCredentials: true,
+      },
     });
+
+    new cdk.CfnOutput(this, 'FunctionUrl', { value: url });
   }
 }

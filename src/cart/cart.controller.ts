@@ -18,7 +18,6 @@ import { CartItem } from './models/cart-items';
 import { CreateOrderDto, PutCartPayload } from 'src/order/type';
 import { Order } from 'src/order/models/order.entity';
 import { calculateCartTotal } from './models-rules';
-import { CartStatuses } from './models';
 
 @Controller('api/profile/cart')
 export class CartController {
