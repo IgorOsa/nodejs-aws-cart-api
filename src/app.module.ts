@@ -11,11 +11,11 @@ import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     TypeOrmModule.forRoot(typeOrmConfig),
     AuthModule,
     CartModule,
     OrderModule,
-    ConfigModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [],

@@ -10,8 +10,6 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class OrderService {
-  private orders: Record<string, Order> = {};
-
   constructor(
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
@@ -38,6 +36,7 @@ export class OrderService {
         status: OrderStatus.Open,
         delivery: JSON.stringify(data.address),
         comments: data?.comments,
+        payment: '',
       });
       return await this.orderRepository.save(order);
     } catch (error) {
