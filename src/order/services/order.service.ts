@@ -1,50 +1,79 @@
-import { Injectable } from '@nestjs/common';
-import { randomUUID } from 'node:crypto';
-import { Order } from '../models';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Repository, DataSource } from 'typeorm';
 import { CreateOrderPayload, OrderStatus } from '../type';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Order } from '../models/order.entity';
+import { CartService, CartStatuses } from 'src/cart';
 
 @Injectable()
 export class OrderService {
-  private orders: Record<string, Order> = {};
+  constructor(
+    @InjectRepository(Order)
+    private orderRepository: Repository<Order>,
+    private cartService: CartService,
+    private dataSource: DataSource,
+  ) {}
 
-  getAll() {
-    return Object.values(this.orders);
+  async getAll() {
+    return await this.orderRepository.find();
   }
 
-  findById(orderId: string): Order {
-    return this.orders[orderId];
+  async findById(orderId: string): Promise<Order> {
+    return await this.orderRepository.findOne({
+      where: { id: orderId },
+      relations: ['items', 'items.product'],
+    });
   }
 
-  create(data: CreateOrderPayload) {
-    const id = randomUUID() as string;
-    const order: Order = {
-      id,
-      ...data,
-      statusHistory: [
-        {
-          comment: '',
-          status: OrderStatus.Open,
-          timestamp: Date.now(),
-        },
-      ],
-    };
+  async create(data: CreateOrderPayload): Promise<Order> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    this.orders[id] = order;
+    try {
+      const order = this.orderRepository.create({
+        user_id: data.userId,
+        cart_id: data.cartId,
+        items: data.items,
+        total: data.total,
+        status: OrderStatus.Open,
+        delivery: JSON.stringify(data.address),
+        comments: data?.comments,
+        payment: '',
+      });
 
-    return order;
+      const savedOrder = await queryRunner.manager.save(order);
+      await this.cartService.updateCartStatus(
+        data.cartId,
+        CartStatuses.ORDERED,
+      );
+
+      await queryRunner.commitTransaction();
+
+      return savedOrder;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new BadRequestException('Failed to create order: ' + error.message);
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   // TODO add  type
-  update(orderId: string, data: Order) {
-    const order = this.findById(orderId);
+  async update(orderId: string, data: Order) {
+    const order = await this.findById(orderId);
 
     if (!order) {
-      throw new Error('Order does not exist.');
+      throw new NotFoundException('Order does not exist.');
     }
 
-    this.orders[orderId] = {
+    return await this.orderRepository.save({
       ...data,
       id: orderId,
-    };
+    });
   }
 }
