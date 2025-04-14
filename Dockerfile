@@ -1,4 +1,3 @@
-# Use the official Node.js 20 slim image as the base image for building
 FROM node:20-alpine AS builder
 
 # Set the working directory in the builder stage
@@ -16,7 +15,6 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Use a smaller base image for the final stage
 FROM node:20-alpine AS prepare
 
 # Set the working directory in the runtime stage
@@ -26,7 +24,7 @@ WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/package*.json ./
 
-# # Install only production dependencies
+# Install only production dependencies
 RUN npm ci --only=production
 
 # Clean up unnecessary files to reduce image size
